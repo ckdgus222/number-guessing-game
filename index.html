@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8" />
+
+    <title>Number guessing game</title>
+
+    <style>
+      html {
+        font-family: sans-serif;
+      }
+
+      body {
+        width: 50%;
+        max-width: 800px;
+        min-width: 480px;
+        margin: 0 auto;
+      }
+
+      .form input[type="number"] {
+        width: 200px;
+      }
+
+      .lastResult {
+        color: white;
+        padding: 3px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Number guessing game</h1>
+
+    <p>
+      We have selected a random number between 1 and 100. See if you can guess
+      it in 10 turns or fewer. We'll tell you if your guess was too high or too
+      low.
+    </p>
+
+    <div class="form">
+      <label for="guessField">Enter a guess: </label>
+      <input
+        type="number"
+        min="1"
+        max="100"
+        required
+        id="guessField"
+        class="guessField"
+      />
+      <input type="submit" value="Submit guess" class="guessSubmit" />
+    </div>
+
+    <div class="resultParas">
+      <p class="guesses"></p>
+      <p class="lastResult"></p>
+      <p class="lowOrHi"></p>
+    </div>
+
+    <script>
+      // 데이터를 저장할 변수 추가
+      let randomNumber = Math.floor(Math.random() * 100) + 1;
+
+      const guesses = document.querySelector(".guesses");
+      const lastResult = document.querySelector(".lastResult");
+      const lowOrHi = document.querySelector(".lowOrHi");
+
+      const guessSubmit = document.querySelector(".guessSubmit");
+      const guessField = document.querySelector(".guessField");
+
+      let guessCount = 1; //유저 카운트의 초기값
+      let resetButton;
+      guessField.focus();
+
+
+      function checkGuess() {
+        const userGuess = Number(guessField.value); //입력 값 Number 숫자로만 입력
+        if(guessCount === 1){ // 첫번째 턴이 맞는가
+          guesses.textContent = "Previous guesses : "
+        }
+        guesses.textContent += userGuess + " " ; // 입력값 띄어쓰기
+        
+        if(userGuess === randomNumber) { // 유저입력 값이 랜덤숫자랑 일치하는지
+          lastResult.textContent = "Congratulations! You got it right!"; //정답
+          lastResult.style.backgroundColor = "green";
+          lowOrHi.textContent = "";
+          setGameOver();
+        }else if (guessCount === 10){// 유저의 카운트가 10회를 넘기면
+          lastResult.textContent = "!!!GAME OVER!!!";
+          lowOrHi.textContent = "";
+          setGameOver();
+        }else{// 유저가 진행할때 문자와 색상 
+          lastResult.textContent = "Wrong!";
+          lastResult.style.backgroundColor = "red";
+        }
+        if(userGuess < randomNumber){ //유저가 추측한 값이 낮은가 높은가 
+          lowOrHi.textContent = "Last guess was too low!"
+        }else if(userGuess > randomNumber){
+          lowOrHi.textContent = "Last guess was too high!";
+        }
+
+        guessCount++; // 카운트 값을 더해준다
+        guessField.value = ""; // 다시 입력할수있게 값을 지운다
+        guessField.focus();
+      }
+
+    guessSubmit.addEventListener("click", checkGuess);
+    
+    function setGameOver(){
+      guessField.disabled = true; // disabled 속성을 true 설정해서 비활성화
+      guessSubmit.disabled = true; //비활성화 시키지않으면 계쏙 게임이 진행된다
+      resetButton = document.createElement("button"); //버튼 요소 생성
+      resetButton.textContent = "Start new game";//텍스트를 생성하고 
+      document.body.append(resetButton); //html 에 추가 
+      resetButton.addEventListener("click", resetGame);//resetGame 함수호출후 다시 시작
+    }
+    function resetGame(){
+      guessCount = 1; //resetGame 함수가 실행되면 카운트를 1 로 다시설정
+
+      const resetParas = document.querySelectorAll(".resultParas p");//모든 p들을 선택해서
+      for(const resetPara of resetParas){ //for문을 사용해서 하나씩 순회하면서 
+        resetPara.textContent = ""; // 빈 문자열로 만든다
+      }
+      resetButton.parentNode.removeChild(resetButton); // 코드 바꿔보기
+      // parentNode 는 부모요소를 가르치고 
+      //removeChild 부모요소에 자식을 remove 한다
+
+      guessField.disabled = false;
+      guessSubmit.disabled = false;
+      guessField.value = "";
+      guessField.focus();
+
+
+      lastResult.style.backgroundColor = "white";
+
+      randomNumber = Math.floor(Math.random() * 100) + 1; //다시 랜덤숫자 정의하기
+    }
+    
+    
+
+    </script>
+  </body>
+</html>
